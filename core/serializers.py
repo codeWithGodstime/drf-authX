@@ -87,9 +87,12 @@ class UserSerializer:
             return data
         
     class UserChangePasswordSerializer(serializers.Serializer):
-        ...
+        current_password = serializers.CharField(max_length=30)
+        new_password = serializers.CharField(max_length=30)
 
-
+        def validate_new_password(self, password):
+            data = validate_password_strength(password)
+            return data
 
 class TokenObtainSerializer(SimpleJWTTokenObtainPairSerializer):
 

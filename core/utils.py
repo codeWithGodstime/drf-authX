@@ -40,7 +40,7 @@ def generate_token_link(user, action):
     token = default_token_generator.make_token(user)
     
     # Generate the URL based on the action provided
-    url = f"{action}/{uid}/{token}"
+    url = f"/{action}/{uid}/{token}"
     
     # Build the full URL (adjust the domain as needed)
     genrated_link = f"http://{settings.FRONTEND_DOMAIN}{url}"

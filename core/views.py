@@ -80,9 +80,11 @@ class UserViewsets(viewsets.ModelViewSet):
     @action(methods=['post'], detail=False, permission_classes=[permissions.IsAuthenticated])
     def change_password(self, request, *args, **kwargs):
         user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        current_password = request.data.get('current_password')
-        new_password = request.data.get('new_password')
+        current_password = serializer.validated_data.get('current_password')
+        new_password = serializer.validated_data.get('new_password')
 
         # Check the current password
         if not user.check_password(current_password):

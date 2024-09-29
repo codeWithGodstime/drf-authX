@@ -4,20 +4,28 @@ from django.core import mail
 
 pytestmark = pytest.mark.django_db
 
-def get_tokens(text):
-    import re
-    # Regex pattern to match uid and token
-    pattern = r'http:\/\/localhost:3000\.com\/(.*?)\/(.*?)$'
+import re
 
+def get_tokens(text):
+    print(text)
+    # Regex pattern to match uid and token
+    pattern = r'http:\/\/localhost:3000\/(.*?)\/(.*?)\/(.*?)$'
+
+    # Searching for matches in the provided text
     match = re.search(pattern, text, re.MULTILINE)
 
+    # Check if a match was found
     if match:
-        uid = match.group(1)
-        token = match.group(2)
+        # Extracting uid and token from the match groups
+        uid = match.group(2)  # Second group as uid
+        token = match.group(3)  # Third group as token
+        print(f"Matched: {match.group(1)}, UID: {uid}, Token: {token}")
     else:
-        return None
+        print("No match found.")
+        return None, None
 
     return uid, token
+
 
 class TestUserReset:
 
@@ -51,7 +59,9 @@ class TestUserReset:
         }
         response = client.post(url, data, format="json")
         uid, token = get_tokens(mail.outbox[0].body)
-        
+
+        assert (uid and token)
+    
         url = reverse("users-reset-password-confirmation")
         data = {
             "uid": uid,
