@@ -7,7 +7,6 @@ pytestmark = pytest.mark.django_db
 import re
 
 def get_tokens(text):
-    print(text)
     # Regex pattern to match uid and token
     pattern = r'http:\/\/localhost:3000\/(.*?)\/(.*?)\/(.*?)$'
 

@@ -93,6 +93,11 @@ class UserSerializer:
         def validate_new_password(self, password):
             data = validate_password_strength(password)
             return data
+        
+    class UserVerificationSerializer(serializers.Serializer):
+        uid = serializers.CharField(max_length=999)
+        token = serializers.CharField(max_length=999)
+        
 
 class TokenObtainSerializer(SimpleJWTTokenObtainPairSerializer):
 
