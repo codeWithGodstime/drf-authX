@@ -5,7 +5,7 @@ services:
     build: .
     image: dj-auth:latest
     container_name: dj_auth-1
-    command: python manage.py runserver 0.0.0.0:9080
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     depends_on:
@@ -13,9 +13,7 @@ services:
       - redis
       - storage
     ports:
-      - 9080:9080
-    networks:
-      - network-1
+      - 8000:8000
 
   database:
     image: postgres:alpine3.20
@@ -28,8 +26,6 @@ services:
       - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - network-1
 
   storage:
     platform: linux/amd64
@@ -43,22 +39,22 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     volumes:
       - storage:/var/lib/minio/data
-    networks:
-      - network-1
 
   redis:
     image: redis:alpine
     ports:
       - 6379:6379
 
-  # celery:
-  #   image: dj_auth_celery:latest
-  #   container_name: dj_auth_celery-1
-  #   command: ["celery", "-A", "dj_auth", "worker", "--loglevel=info"]
-  #   volumes:
-  #     - .:/app
-  #   depends_on:
-  #     - redis
+  celery:
+    build: .
+    image: dj_auth_celery
+    container_name: dj_auth_celery
+    command: celery -A dj_auth worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - backend
 
   mailhog:
     image: mailhog/mailhog
@@ -67,11 +63,6 @@ services:
     ports:
       - 1025:1025 # smtp server
       - 8025:8025 # web ui
-    networks:
-      - network-1
-
-networks:
-  network-1:
 
 volumes:
   postgres_data:
